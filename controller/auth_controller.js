@@ -49,5 +49,13 @@ module.exports.login_get = (req, res) => {
 };
 module.exports.login_post = async (req, res) => {
 	const { email, password } = req.body;
-	res.send('user login');
+
+	try {
+		const user = await User.login(email, password);
+		const token = create_token(user._id);
+		res.cookie('jwt', token, { httpOnly: true, maxAge: max_age * 1000 });
+		res.status(200).json({ user: user._id });
+	} catch (err) {
+		res.status(400).json({});
+	}
 };
