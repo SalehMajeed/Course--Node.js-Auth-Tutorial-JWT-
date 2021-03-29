@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const auth_routes = require('./routes/auth_routes');
 const app = express();
 const cookie_parser = require('cookie-parser');
+const { require_auth, check_user } = require('./middleware/authMiddleware');
 
 app.disable('x-powered-by');
 
@@ -21,8 +22,9 @@ mongoose
 	})
 	.catch(err => console.log(err));
 
+app.get('*', check_user);
 app.get('/', (req, res) => res.render('home'));
-app.get('/smoothies', (req, res) => res.render('smoothies'));
+app.get('/smoothies', require_auth, (req, res) => res.render('smoothies'));
 
 // app.get('/set-cookies', (req, res) => {
 // 	// res.setHeader('Set-Cookie', 'newUser=true');
